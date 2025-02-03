@@ -40,7 +40,7 @@ Since it is a CRD, randomization is unrestricted.
 
 ```{r crd_rand}
 # Setting seed to get same randomization result every time
-set.seed(930)
+set.seed(7)
 
 crd_rand = crossing(trtname = trts$trtname,
                     rep = 1:4) %>%
@@ -83,9 +83,16 @@ ggplot(data = crd_layout,
   geom_tile(aes(fill = trtname), 
             color= "black",
             show.legend = F) +
-  geom_text(aes(label = label)) +
+  scale_fill_brewer(palette = "Paired") +
+  geom_text(aes(label = plot), fontface = "bold", vjust = -.5)+
+  geom_text(aes(label = trtname), fontface= "italic", vjust = 1)+
   labs(title = "CRD randomization of a 3 x 3 factorial (9 treatments)") +
   theme_void()
+
+ggsave("../output/crd_ass_layoutmap.png",
+       width = 6,
+       height = 4,
+       bg = "white")
 
 ```
 
@@ -96,7 +103,7 @@ Notice how due to unrestricted randomization, we had the replication of some tre
 ## Randomization  
 ```{r rcbd_rand}
 # Setting seed to get same randomization result every time
-set.seed(930)
+set.seed(77)
 
 rcbd_rand = crossing(trtname = trts$trtname,
                      rep = 1:4) %>%
@@ -139,10 +146,11 @@ ggplot(data = rcbd_layout, aes(x = row,
                                y = -col))+
   geom_tile(aes(fill = trtname),
             color = "black",
-            show.legend = F
-  )+
+            show.legend = F,
+            alpha= 0.6)+
+  scale_fill_brewer(palette = "Set1") +
   geom_text(aes(label = plot), fontface = "bold", vjust = -.5)+
-  geom_text(aes(label = trtname), vjust = 1)+
+  geom_text(aes(label = trtname), fontface= "italic", vjust = 1)+
   labs(title = "RCBD randomization of a 3 x 3 factorial (9 treatments)") +
   theme_void()
 
@@ -163,7 +171,7 @@ rcbd_rand %>%
   # Rearranging columns  
   dplyr::select(plot, rep, trtname,
                 trtnum,nrate_kgha, krate_kgha) %>%
-  write_csv("../output/rcbd_randomization_table.csv")
+  write_csv("../output/rcbd_ass_randomization_table.csv")
 
 
 ```
@@ -171,7 +179,7 @@ rcbd_rand %>%
 `ggsave()` will save the last plot created in the session, even if from an above chunk. Since the last plot we created was the RCBD layout, we can just go ahead and call ggsave here.  
 
 ```{r}
-ggsave("../output/rcbd_layoutmap.png",
+ggsave("../output/rcbd_ass_layoutmap.png",
        width = 6,
        height = 4,
        bg = "white")
