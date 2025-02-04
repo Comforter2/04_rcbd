@@ -56,7 +56,7 @@ rcbd_dfw
 
 
 ```{r rcbd_dfw}
-summary(rcbd_dfw)
+summary(rcbd_dfw) # summary again to confirm class changes
 ```
 Number of replicates: 4  
 Number o treatments: 3 N rates x 3 K rates = 9  
@@ -68,8 +68,8 @@ Yield: from 2795 to 7445 kg/ha
 ggplot(rcbd_dfw, aes(x = nrate_kgha, 
                     y = yield_kgha,
                     color = nrate_kgha)) +
-  geom_boxplot() +
-  geom_jitter() + #jitter is a feature that makes the points offset to better see the data in case they re overlapping
+  geom_boxplot(width= 0.3) +
+  geom_jitter() + #jitter is a feature that makes the points offset to better see the data in case they are overlapping
   theme(legend.position = "none")
 ```
 
@@ -77,7 +77,7 @@ ggplot(rcbd_dfw, aes(x = nrate_kgha,
 ggplot(rcbd_dfw, aes(x = krate_kgha, 
                     y = yield_kgha,
                     color = krate_kgha)) +
-  geom_boxplot() +
+  geom_boxplot(width = 0.3) +
   geom_jitter() +
   theme(legend.position = "none")
 ```
@@ -106,7 +106,7 @@ Below we change the default to sum-to-zero ("contr.sum") before fitting the mode
 options(contrasts = c("contr.sum", "contr.poly"))
 
 # Model fitting
-rcbd_mod 
+rcbd_mod = lm(yield_kgha ~ rep + nrate_kgha*krate_kgha, data = rcbd_dfw)
 
 # Summary
 summary(rcbd_mod)
@@ -148,7 +148,8 @@ First, let's extract our model residuals, and also create studentized residuals.
 
 ```{r rcbd_resid}
 rcbd_resid <- augment(rcbd_mod) %>%
-  mutate(.studresid=rstudent(rcbd_mod))
+  mutate(.studresid=rstudent(rcbd_mod)) # one way to normalize our residuals to our 
+  # response variable and lets us find outliers
 
 rcbd_resid
 ```
@@ -157,8 +158,12 @@ Now, let's recap the linear model assumptions:
 
 - Residual independence (no pattern)  
 - Residual variance homogeneity (homoscedasticity)  
-- Residual normality (discuss this!)  
+- Residual normality (discuss this!), on residuals not normal data.
 - Outlier detection (< -3 or > 3)  
+
+variance error = eiidN(0, sigma2)
+
+Better to do visual assessments than the code tests for the assumptions
 
 ## Residual independence  
 - For this, we use the **fitted vs. residual plot**.  
